@@ -7,7 +7,7 @@ using System.Web;
 
 namespace StartWarsRestfulService.Models
 {
-    [Table("characters", Schema ="public")]
+    [Table("characters", Schema = "public")]
     public class CharactersClass
     {
         [Key]

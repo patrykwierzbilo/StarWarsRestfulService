@@ -14,6 +14,6 @@ namespace StartWarsRestfulService.DataContext
 
         }
 
-        public virtual DbSet<CharactersClass> CharactersObj { get; set; }
+        public virtual DbSet<CharactersClass> Charactersobj { get; set; }
     }
 }

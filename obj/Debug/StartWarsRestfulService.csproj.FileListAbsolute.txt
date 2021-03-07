@@ -195,3 +195,6 @@ C:\Users\patry\Desktop\StarWarsRestfulService\obj\Debug\StartWarsRestfulService.
 C:\Users\patry\Desktop\StarWarsRestfulService\obj\Debug\StartWarsRestfulService.csproj.CopyComplete
 C:\Users\patry\Desktop\StarWarsRestfulService\obj\Debug\StartWarsRestfulService.dll
 C:\Users\patry\Desktop\StarWarsRestfulService\obj\Debug\StartWarsRestfulService.pdb
+C:\Users\patry\Desktop\StarWarsRestfulService\bin\Swashbuckle.Core.dll
+C:\Users\patry\Desktop\StarWarsRestfulService\bin\WebActivatorEx.dll
+C:\Users\patry\Desktop\StarWarsRestfulService\obj\Debug\StartWarsRestfulService.csprojAssemblyReference.cache
