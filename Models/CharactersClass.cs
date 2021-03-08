@@ -13,7 +13,5 @@ namespace StartWarsRestfulService.Models
         [Key]
         public int character_id { get; set; }
         public string name { get; set; }
-        //public string episodes { get; set; }
-        //public string friends { get; set; }
     }
 }

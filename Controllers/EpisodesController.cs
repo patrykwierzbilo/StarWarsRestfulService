@@ -13,44 +13,44 @@ using StartWarsRestfulService.Models;
 
 namespace StartWarsRestfulService.Controllers
 {
-    public class CharactersController : ApiController
+    public class EpisodesController : ApiController
     {
         private ApplicationDBContext db = new ApplicationDBContext();
 
-        // GET: api/Characters
-        public IQueryable<CharactersClass> GetCharactersobj()
+        // GET: api/Episodes
+        public IQueryable<EpisodesClass> GetEpisodessobj()
         {
-            return db.Charactersobj;
+            return db.Episodessobj;
         }
 
-        // GET: api/Characters/5
-        [ResponseType(typeof(CharactersClass))]
-        public IHttpActionResult GetCharactersClass(int id)
+        // GET: api/Episodes/5
+        [ResponseType(typeof(EpisodesClass))]
+        public IHttpActionResult GetEpisodesClass(int id)
         {
-            CharactersClass charactersClass = db.Charactersobj.Find(id);
-            if (charactersClass == null)
+            EpisodesClass episodesClass = db.Episodessobj.Find(id);
+            if (episodesClass == null)
             {
                 return NotFound();
             }
 
-            return Ok(charactersClass);
+            return Ok(episodesClass);
         }
 
-        // PUT: api/Characters/5
+        // PUT: api/Episodes/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutCharactersClass(int id, CharactersClass charactersClass)
+        public IHttpActionResult PutEpisodesClass(int id, EpisodesClass episodesClass)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != charactersClass.character_id)
+            if (id != episodesClass.episode_id)
             {
                 return BadRequest();
             }
 
-            db.Entry(charactersClass).State = EntityState.Modified;
+            db.Entry(episodesClass).State = EntityState.Modified;
 
             try
             {
@@ -58,7 +58,7 @@ namespace StartWarsRestfulService.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CharactersClassExists(id))
+                if (!EpisodesClassExists(id))
                 {
                     return NotFound();
                 }
@@ -71,35 +71,35 @@ namespace StartWarsRestfulService.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Characters
-        [ResponseType(typeof(CharactersClass))]
-        public IHttpActionResult PostCharactersClass(CharactersClass charactersClass)
+        // POST: api/Episodes
+        [ResponseType(typeof(EpisodesClass))]
+        public IHttpActionResult PostEpisodesClass(EpisodesClass episodesClass)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Charactersobj.Add(charactersClass);
+            db.Episodessobj.Add(episodesClass);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = charactersClass.character_id }, charactersClass);
+            return CreatedAtRoute("DefaultApi", new { id = episodesClass.episode_id }, episodesClass);
         }
 
-        // DELETE: api/Characters/5
-        [ResponseType(typeof(CharactersClass))]
-        public IHttpActionResult DeleteCharactersClass(int id)
+        // DELETE: api/Episodes/5
+        [ResponseType(typeof(EpisodesClass))]
+        public IHttpActionResult DeleteEpisodesClass(int id)
         {
-            CharactersClass charactersClass = db.Charactersobj.Find(id);
-            if (charactersClass == null)
+            EpisodesClass episodesClass = db.Episodessobj.Find(id);
+            if (episodesClass == null)
             {
                 return NotFound();
             }
 
-            db.Charactersobj.Remove(charactersClass);
+            db.Episodessobj.Remove(episodesClass);
             db.SaveChanges();
 
-            return Ok(charactersClass);
+            return Ok(episodesClass);
         }
 
         protected override void Dispose(bool disposing)
@@ -111,9 +111,9 @@ namespace StartWarsRestfulService.Controllers
             base.Dispose(disposing);
         }
 
-        private bool CharactersClassExists(int id)
+        private bool EpisodesClassExists(int id)
         {
-            return db.Charactersobj.Count(e => e.character_id == id) > 0;
+            return db.Episodessobj.Count(e => e.episode_id == id) > 0;
         }
     }
 }
