@@ -17,13 +17,22 @@ namespace StartWarsRestfulService.Controllers
     {
         private ApplicationDBContext db = new ApplicationDBContext();
 
-        // GET: api/CharactersClasses
-        public IQueryable<CharactersClass> GetCharactersobj()
+        // GET: api/Characters
+        public IQueryable<CharactersDTO> GetCharactersobj()
         {
-            return db.Charactersobj;
-        }
+            var names = db.Charactersobj.ToList();
+            //var episodes = db.Episodessobj.ToList();
 
-        // GET: api/CharactersClasses/5
+            List<CharactersDTO> list = new List<CharactersDTO>();
+            foreach (var x in names)
+            {
+                Console.Out.WriteLine(x.name);
+                list.Add(new CharactersDTO(x.name, new List<string>(), new List<string>()));
+            }
+            return list.AsQueryable();
+        }
+        /*
+        // GET: api/Characters/5
         [ResponseType(typeof(CharactersClass))]
         public IHttpActionResult GetCharactersClass(int id)
         {
@@ -36,7 +45,7 @@ namespace StartWarsRestfulService.Controllers
             return Ok(charactersClass);
         }
 
-        // PUT: api/CharactersClasses/5
+        // PUT: api/Characters/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCharactersClass(int id, CharactersClass charactersClass)
         {
@@ -45,7 +54,7 @@ namespace StartWarsRestfulService.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != charactersClass.id)
+            if (id != charactersClass.character_id)
             {
                 return BadRequest();
             }
@@ -71,7 +80,7 @@ namespace StartWarsRestfulService.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/CharactersClasses
+        // POST: api/Characters
         [ResponseType(typeof(CharactersClass))]
         public IHttpActionResult PostCharactersClass(CharactersClass charactersClass)
         {
@@ -83,10 +92,10 @@ namespace StartWarsRestfulService.Controllers
             db.Charactersobj.Add(charactersClass);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = charactersClass.id }, charactersClass);
+            return CreatedAtRoute("DefaultApi", new { id = charactersClass.character_id }, charactersClass);
         }
 
-        // DELETE: api/CharactersClasses/5
+        // DELETE: api/Characters/5
         [ResponseType(typeof(CharactersClass))]
         public IHttpActionResult DeleteCharactersClass(int id)
         {
@@ -113,7 +122,7 @@ namespace StartWarsRestfulService.Controllers
 
         private bool CharactersClassExists(int id)
         {
-            return db.Charactersobj.Count(e => e.id == id) > 0;
-        }
+            return db.Charactersobj.Count(e => e.character_id == id) > 0;
+        }*/
     }
 }
