@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Data.Entity;
 using StartWarsRestfulService.Models;
 
@@ -19,34 +18,12 @@ namespace StartWarsRestfulService.DataContext
         public virtual DbSet<RelationsClass> Relationssobj { get; set; }
         public virtual DbSet<ConnectionsEpisodesClass> ConnectionsEpisodessobj { get; set; }
 
-        public List<CharactersDTO> GetAllCharacters()
+        public string GetCharacterNameById(int id)
         {
-            List<CharactersDTO> result = new List<CharactersDTO>();
-            List<CharactersClass> characters = Charactersobj.ToList();
-            foreach (var character in characters)
+            var result = Charactersobj.Where(x => x.character_id == id).Select(x => x).ToList();
+            if(result.Count != 0)
             {
-                int id = character.character_id;
-                CharactersDTO newCharacter = new CharactersDTO(character.name, GetEpisodes(id), GetFriends(id));
-                result.Add(newCharacter);
-            }
-            return result;
-        }
-
-        public CharactersDTO Get(int id)
-        {
-            var result = GetCharacterNameById(id);
-            if (result != null)
-                return new CharactersDTO(result, GetEpisodes(id), GetFriends(id));
-            else
-                return null;
-        }
-
-        string GetCharacterNameById(int id)
-        {
-            var result = Charactersobj.First(x => x.character_id == id);
-            if(result != null)
-            {
-                return result.name;
+                return result.First().name;
             }
             else
             {
@@ -54,7 +31,7 @@ namespace StartWarsRestfulService.DataContext
             }
         }
 
-        List<string> GetEpisodes(int id)
+        public List<string> GetEpisodes(int id)
         {
             List<int> episodesIds = ConnectionsEpisodessobj.
                     Where(x => x.character_id == id).
@@ -67,7 +44,7 @@ namespace StartWarsRestfulService.DataContext
             return episodes;
         }
 
-        List<string> GetFriends(int id)
+        public List<string> GetFriends(int id)
         {
             List<int> friendsIds = Relationssobj.
                     Where(x => x.character1_id == id).
@@ -80,23 +57,50 @@ namespace StartWarsRestfulService.DataContext
             return friends;
         }
 
-        public CharactersDTO CreateCharacter(CharactersDTO characterDTO)
+        public bool IsIdExists(int id)
         {
-            string name = characterDTO.name;
-            List<string> episodes = characterDTO.episodes;
-            List<string> friends = characterDTO.friends;
-            if (IsNameNotExists(name))
+            return Charactersobj.Where(x => x.character_id == id).ToList().Count != 0;
+        }
+
+        public bool IsNameExists(string name)
+        {
+            return Charactersobj.Where(x => x.name.Equals(name)).ToList().Count != 0;
+        }
+
+        public CharactersClass AddCharacterByName(string name)
+        {
+            if (IsNameExists(name))
                 return null;
             CharactersClass character = new CharactersClass() { name = name };
-            
             Charactersobj.Add(character);
             SaveChanges();
-            int character_id = Charactersobj.Where(x => x.name.Equals(name)).Select(x => x.character_id).ToList().First();
-            List<int> newEpisodes = Episodessobj.
+            return character;
+        }
+
+        public int GetCharacterIdByName(string name)
+        {
+            var result = Charactersobj.Where(x => x.name.Equals(name)).Select(x => x.character_id).ToList();
+            if(result.Count != 0)
+            {
+                return result.First();
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        public List<int> GetEpisodesIds(List<string> episodes)
+        {
+            return Episodessobj.
                 Where(x => episodes.Contains(x.name)).
                 Select(x => x.episode_id).
                 ToList();
-            foreach(var episodeId in newEpisodes)
+        }
+
+        public void AddEpisodesToCharacter(List<int> episodesIds, int character_id)
+        {
+            foreach (var episodeId in episodesIds)
             {
                 ConnectionsEpisodesClass conn = new ConnectionsEpisodesClass();
                 conn.character_id = character_id;
@@ -104,11 +108,19 @@ namespace StartWarsRestfulService.DataContext
                 ConnectionsEpisodessobj.Add(conn);
             }
             SaveChanges();
-            List<int> newFriends = Charactersobj.
+        }
+
+        public List<int> GetFriendsIds(List<string> friends)
+        {
+            return Charactersobj.
                 Where(x => friends.Contains(x.name)).
                 Select(x => x.character_id).
                 ToList();
-            foreach (var frinedId in newFriends)
+        }
+
+        public void AddFriendsToCharacter(List<int> friendsIds, int character_id)
+        {
+            foreach (var frinedId in friendsIds)
             {
                 RelationsClass relation = new RelationsClass();
                 relation.character1_id = character_id;
@@ -116,45 +128,56 @@ namespace StartWarsRestfulService.DataContext
                 Relationssobj.Add(relation);
             }
             SaveChanges();
-            return characterDTO;
         }
 
-        public void DeleteById(int id)
+        public List<ConnectionsEpisodesClass> GetConnectedEpisodes(int id)
         {
-            if (IsIdNotExists(id))
-                return;
-            List<ConnectionsEpisodesClass> toRemove = ConnectionsEpisodessobj.
+            return ConnectionsEpisodessobj.
                 Where(x => x.character_id == id).
                 Select(x => x).
                 ToList();
-            foreach(var elem in toRemove)
+        }
+
+        public void RemoveEpisodesConnections(List<ConnectionsEpisodesClass> toRemove)
+        {
+            foreach (var elem in toRemove)
             {
                 ConnectionsEpisodessobj.Remove(elem);
             }
-            //lack of check of free episodes
             SaveChanges();
-            List<RelationsClass> relRemove = Relationssobj.
+        }
+
+        public List<RelationsClass> GetRelationsOfCharacter(int id)
+        {
+            return Relationssobj.
                 Where(x => x.character1_id == id || x.character2_id == id).
                 Select(x => x).
                 ToList();
-            foreach (var elem in relRemove)
+        }
+
+        public void RemoveRelationsOfCharacter(List<RelationsClass> toRemove)
+        {
+            foreach (var elem in toRemove)
             {
                 Relationssobj.Remove(elem);
             }
             SaveChanges();
-            var characterRem = Charactersobj.Where(x => x.character_id == id).Select(x => x).ToList().First();
-            Charactersobj.Remove(characterRem);
+        }
+
+        public CharactersClass RemoveCharacter(int id)
+        {
+            var characterRem = GetCharacterById(id);
+            if(characterRem.Count == 0)
+                return null;
+            var deleted = characterRem.First();
+            Charactersobj.Remove(deleted);
             SaveChanges();
+            return deleted;
         }
 
-        bool IsIdNotExists(int id)
+        public List<CharactersClass> GetCharacterById(int id)
         {
-            return Charactersobj.Where(x => x.character_id == id).ToList() == null;
-        }
-
-        bool IsNameNotExists(string name)
-        {
-            return Charactersobj.Where(x => x.name.Equals(name)).ToList() == null;
+            return Charactersobj.Where(x => x.character_id == id).Select(x => x).ToList();
         }
     }
 }

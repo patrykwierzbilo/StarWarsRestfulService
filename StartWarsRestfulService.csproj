@@ -216,7 +216,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CharactersClass.cs" />
-    <Compile Include="Services\CharactersDTO.cs" />
+    <Compile Include="Models\DTO\CharactersDTO.cs" />
     <Compile Include="Models\ConnectionsEpisodesClass.cs" />
     <Compile Include="Models\EpisodesClass.cs" />
     <Compile Include="Models\RelationsClass.cs" />

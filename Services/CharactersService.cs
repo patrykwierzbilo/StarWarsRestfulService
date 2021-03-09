@@ -1,9 +1,7 @@
 ﻿using StartWarsRestfulService.DataContext;
 using StartWarsRestfulService.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace StartWarsRestfulService.Services
 {
@@ -18,26 +16,60 @@ namespace StartWarsRestfulService.Services
 
         public List<CharactersDTO> GetAll()
         {
-            return db.GetAllCharacters();
+            List<CharactersDTO> result = new List<CharactersDTO>();
+            List<CharactersClass> characters = db.Charactersobj.ToList();
+            foreach (var character in characters)
+            {
+                int id = character.character_id;
+                CharactersDTO newCharacter = new CharactersDTO(character.name, db.GetEpisodes(id), db.GetFriends(id));
+                result.Add(newCharacter);
+            }
+            return result;
         }
 
         public CharactersDTO Get(int id)
         {
-            var character = db.Get(id);
-            if (character != null)
-                return character;
+            var result = db.GetCharacterNameById(id);
+            if (result != null)
+                return new CharactersDTO(result, db.GetEpisodes(id), db.GetFriends(id));
             else
                 return null;
         }
 
-        public void CreateCharacter(CharactersDTO characterDTO)
+        public CharactersDTO CreateCharacter(CharactersDTO characterDTO)
         {
-            db.CreateCharacter(characterDTO);
+            string name = characterDTO.name;
+            List<string> episodes = characterDTO.episodes;
+            List<string> friends = characterDTO.friends;
+
+            var additionResult = db.AddCharacterByName(name);
+            if (additionResult == null)
+                return null;
+
+            int character_id = db.GetCharacterIdByName(name);
+
+            List<int> newEpisodes = db.GetEpisodesIds(episodes);
+            db.AddEpisodesToCharacter(newEpisodes, character_id);
+
+            List<int> newFriends = db.GetFriendsIds(friends);
+            db.AddFriendsToCharacter(newFriends, character_id);
+
+            return characterDTO;
         }
 
-        public void DeleteCharacter(int id)
+        public CharactersClass DeleteById(int id)
         {
-            db.DeleteById(id);
+            if (!db.IsIdExists(id))
+                return null;
+
+            List<ConnectionsEpisodesClass> toRemove = db.GetConnectedEpisodes(id);
+            db.RemoveEpisodesConnections(toRemove);
+
+            List<RelationsClass> relRemove = db.GetRelationsOfCharacter(id);
+            db.RemoveRelationsOfCharacter(relRemove);
+
+            var deleted = db.RemoveCharacter(id);
+            return deleted;
         }
     }
 }
